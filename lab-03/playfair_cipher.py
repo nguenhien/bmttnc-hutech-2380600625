@@ -21,11 +21,38 @@ class MyApp(QMainWindow):
         self.ui.btn_decrypt.clicked.connect(self.call_api_decrypt)
 
     def call_api_encrypt(self):
+        plain_text = self.ui.txt_plain_text.toPlainText().strip()
+        key = self.ui.txt_key.text().strip()
+
+        if not plain_text:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập bản rõ!"
+            )
+            return
+
+        if not key:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập khóa!"
+            )
+            return
+
+        if not key.isalpha():
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Playfair chỉ được chứa chữ cái!"
+            )
+            return
+
         url = "http://127.0.0.1:5000/api/playfair/encrypt"
 
         payload = {
-            "plain_text": self.ui.txt_plain_text.toPlainText(),
-            "key": self.ui.txt_key.text().strip()
+            "plain_text": plain_text,
+            "key": key
         }
 
         try:
@@ -40,30 +67,57 @@ class MyApp(QMainWindow):
 
                 QMessageBox.information(
                     self,
-                    "Success",
-                    "Encrypted Playfair Successfully"
+                    "Thành công",
+                    "Mã hóa Playfair thành công!"
                 )
 
             else:
                 QMessageBox.warning(
                     self,
-                    "API Error",
-                    f"Status Code: {response.status_code}\n\n{response.text}"
+                    "Lỗi API",
+                    f"Mã lỗi: {response.status_code}\n\n{response.text}"
                 )
 
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(
                 self,
-                "Connection Error",
+                "Lỗi kết nối",
                 str(e)
             )
 
     def call_api_decrypt(self):
+        cipher_text = self.ui.txt_cipher_text.toPlainText().strip()
+        key = self.ui.txt_key.text().strip()
+
+        if not cipher_text:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập bản mã!"
+            )
+            return
+
+        if not key:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập khóa!"
+            )
+            return
+
+        if not key.isalpha():
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Playfair chỉ được chứa chữ cái!"
+            )
+            return
+
         url = "http://127.0.0.1:5000/api/playfair/decrypt"
 
         payload = {
-            "cipher_text": self.ui.txt_cipher_text.toPlainText(),
-            "key": self.ui.txt_key.text().strip()
+            "cipher_text": cipher_text,
+            "key": key
         }
 
         try:
@@ -78,21 +132,21 @@ class MyApp(QMainWindow):
 
                 QMessageBox.information(
                     self,
-                    "Success",
-                    "Decrypted Playfair Successfully"
+                    "Thành công",
+                    "Giải mã Playfair thành công!"
                 )
 
             else:
                 QMessageBox.warning(
                     self,
-                    "API Error",
-                    f"Status Code: {response.status_code}\n\n{response.text}"
+                    "Lỗi API",
+                    f"Mã lỗi: {response.status_code}\n\n{response.text}"
                 )
 
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(
                 self,
-                "Connection Error",
+                "Lỗi kết nối",
                 str(e)
             )
 

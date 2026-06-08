@@ -16,11 +16,49 @@ class MyApp(QMainWindow):
         self.ui.btn_decrypt.clicked.connect(self.call_api_decrypt)
 
     def call_api_encrypt(self):
+        plain_text = self.ui.txt_plain_text.toPlainText().strip()
+        key = self.ui.txt_key.toPlainText().strip()
+
+        # Kiểm tra dữ liệu
+        if not plain_text:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập bản rõ!"
+            )
+            return
+
+        if not key:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập khóa!"
+            )
+            return
+
+        if not key.isdigit():
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Caesar phải là số nguyên!"
+            )
+            return
+
+        key = int(key)
+
+        if key < 1 or key > 25:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Caesar phải nằm trong khoảng từ 1 đến 25!"
+            )
+            return
+
         url = "http://127.0.0.1:5000/api/caesar/encrypt"
 
         payload = {
-            "plain_text": self.ui.txt_plain_text.toPlainText(),
-            "key": self.ui.txt_key.toPlainText()
+            "plain_text": plain_text,
+            "key": str(key)
         }
 
         try:
@@ -35,30 +73,68 @@ class MyApp(QMainWindow):
 
                 QMessageBox.information(
                     self,
-                    "Success",
-                    "Encrypted Successfully"
+                    "Thành công",
+                    "Mã hóa thành công!"
                 )
 
             else:
                 QMessageBox.warning(
                     self,
-                    "Error",
-                    f"API Error: {response.status_code}"
+                    "Lỗi API",
+                    f"Mã lỗi: {response.status_code}"
                 )
 
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(
                 self,
-                "Connection Error",
+                "Lỗi kết nối",
                 str(e)
             )
 
     def call_api_decrypt(self):
+        cipher_text = self.ui.txt_cipher_text.toPlainText().strip()
+        key = self.ui.txt_key.toPlainText().strip()
+
+        # Kiểm tra dữ liệu
+        if not cipher_text:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập bản mã!"
+            )
+            return
+
+        if not key:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập khóa!"
+            )
+            return
+
+        if not key.isdigit():
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Caesar phải là số nguyên!"
+            )
+            return
+
+        key = int(key)
+
+        if key < 1 or key > 25:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Caesar phải nằm trong khoảng từ 1 đến 25!"
+            )
+            return
+
         url = "http://127.0.0.1:5000/api/caesar/decrypt"
 
         payload = {
-            "cipher_text": self.ui.txt_cipher_text.toPlainText(),
-            "key": self.ui.txt_key.toPlainText()
+            "cipher_text": cipher_text,
+            "key": str(key)
         }
 
         try:
@@ -73,21 +149,21 @@ class MyApp(QMainWindow):
 
                 QMessageBox.information(
                     self,
-                    "Success",
-                    "Decrypted Successfully"
+                    "Thành công",
+                    "Giải mã thành công!"
                 )
 
             else:
                 QMessageBox.warning(
                     self,
-                    "Error",
-                    f"API Error: {response.status_code}"
+                    "Lỗi API",
+                    f"Mã lỗi: {response.status_code}"
                 )
 
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(
                 self,
-                "Connection Error",
+                "Lỗi kết nối",
                 str(e)
             )
 

@@ -21,11 +21,46 @@ class MyApp(QMainWindow):
         self.ui.btn_decrypt.clicked.connect(self.call_api_decrypt)
 
     def call_api_encrypt(self):
+        plain_text = self.ui.txt_plain_text.toPlainText().strip()
+        key = self.ui.txt_key.text().strip()
+
+        if not plain_text:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập bản rõ!"
+            )
+            return
+
+        if not key:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập khóa!"
+            )
+            return
+
+        if not key.isdigit():
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Rail Fence phải là số nguyên!"
+            )
+            return
+
+        if int(key) < 2:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Rail Fence phải lớn hơn hoặc bằng 2!"
+            )
+            return
+
         url = "http://127.0.0.1:5000/api/railfence/encrypt"
 
         payload = {
-            "plain_text": self.ui.txt_plain_text.toPlainText(),
-            "key": self.ui.txt_key.text().strip()
+            "plain_text": plain_text,
+            "key": key
         }
 
         try:
@@ -40,30 +75,65 @@ class MyApp(QMainWindow):
 
                 QMessageBox.information(
                     self,
-                    "Success",
-                    "Encrypted Rail Fence Successfully"
+                    "Thành công",
+                    "Mã hóa Rail Fence thành công!"
                 )
 
             else:
                 QMessageBox.warning(
                     self,
-                    "API Error",
-                    f"Status Code: {response.status_code}\n\n{response.text}"
+                    "Lỗi API",
+                    f"Mã lỗi: {response.status_code}\n\n{response.text}"
                 )
 
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(
                 self,
-                "Connection Error",
+                "Lỗi kết nối",
                 str(e)
             )
 
     def call_api_decrypt(self):
+        cipher_text = self.ui.txt_cipher_text.toPlainText().strip()
+        key = self.ui.txt_key.text().strip()
+
+        if not cipher_text:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập bản mã!"
+            )
+            return
+
+        if not key:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Vui lòng nhập khóa!"
+            )
+            return
+
+        if not key.isdigit():
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Rail Fence phải là số nguyên!"
+            )
+            return
+
+        if int(key) < 2:
+            QMessageBox.warning(
+                self,
+                "Lỗi",
+                "Khóa Rail Fence phải lớn hơn hoặc bằng 2!"
+            )
+            return
+
         url = "http://127.0.0.1:5000/api/railfence/decrypt"
 
         payload = {
-            "cipher_text": self.ui.txt_cipher_text.toPlainText(),
-            "key": self.ui.txt_key.text().strip()
+            "cipher_text": cipher_text,
+            "key": key
         }
 
         try:
@@ -78,21 +148,21 @@ class MyApp(QMainWindow):
 
                 QMessageBox.information(
                     self,
-                    "Success",
-                    "Decrypted Rail Fence Successfully"
+                    "Thành công",
+                    "Giải mã Rail Fence thành công!"
                 )
 
             else:
                 QMessageBox.warning(
                     self,
-                    "API Error",
-                    f"Status Code: {response.status_code}\n\n{response.text}"
+                    "Lỗi API",
+                    f"Mã lỗi: {response.status_code}\n\n{response.text}"
                 )
 
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(
                 self,
-                "Connection Error",
+                "Lỗi kết nối",
                 str(e)
             )
 
